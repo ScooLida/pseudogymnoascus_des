@@ -17,7 +17,7 @@ touch all_rep.txt
 > all_rep.txt
  for  rep in *_rep.txt; do
   Sname=$(basename "${rep%_rep.txt}")
-  if grep  -q "153531" "$rep"; then echo "$Sname" >> all_rep.txt
+  if grep  -q "Pseudogymnoascus destructans" "$rep"; then echo "$Sname" >> all_rep.txt
  fi
 done
 
