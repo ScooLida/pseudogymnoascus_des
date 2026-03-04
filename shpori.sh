@@ -158,3 +158,15 @@ ls -l /home/users/sofa/big_drive
 
 # Проверить права на запись (создать тестовый файл через ссылку)
 touch /home/users/sofa/big_drive/test.txt
+
+#переименование одинаковых, сначала провек
+for file in *.fq.gz; do
+    # Оставляем только часть после '_B_' или '_PE100_', убираем '_L00_'
+    new_name=$(echo "$file" | sed -E 's/.*_B_(PE100_)?(.*)_L00_/\2_/')
+    echo "Переименование: $file -> $new_name"
+done
+
+for file in *.fq.gz; do
+    new_name=$(echo "$file" | sed -E 's/.*_B_(PE100_)?(.*)_L00_/\2_/')
+    mv -v "$file" "$new_name"
+done
