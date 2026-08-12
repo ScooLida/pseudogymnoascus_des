@@ -47,6 +47,8 @@ fi
 
 echo "Selected samples: $target_count"
 echo "Sample list saved to: $TARGET_SAMPLES_FILE"
+echo "Samples that passed the filter:"
+cat "$TARGET_SAMPLES_FILE"
 
 for gene in "${GENES[@]}"; do
     printf "Sample\tPosition\tDepth\n" > "$OUT_DIR/${gene}_temp.tsv"
