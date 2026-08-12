@@ -1,7 +1,7 @@
 #!/bin/bash
-# Calculate per-gene breadth of coverage for every BAM sample.
-# A reference position is counted as covered when its read depth is at least
-# MIN_DEPTH. Results are written to a tab-separated summary table.
+# Calculate breadth of coverage for every BAM sample and target gene.
+# Each row contains one sample, each column contains one gene, and each cell
+# contains the percentage of positions with read depth at least MIN_DEPTH.
 
 # Configuration
 OUT_DIR="./genes_report"
@@ -20,7 +20,11 @@ if [ "${#BAM_FILES[@]}" -eq 0 ]; then
     exit 1
 fi
 
-printf "Sample\tGene\tBreadthPercentage\n" > "$BREADTH_FILE"
+{
+    printf "Sample"
+    printf "\t%s" "${GENES[@]}"
+    printf "\n"
+} > "$BREADTH_FILE"
 total_files=${#BAM_FILES[@]}
 echo "Samples found: $total_files"
 echo "Coverage threshold: depth >= $MIN_DEPTH"
@@ -40,6 +44,7 @@ for bam in "${BAM_FILES[@]}"; do
         samtools index "$bam"
     fi
 
+    breadth_values=()
     for gene in "${GENES[@]}"; do
         breadth=$(samtools depth -a -r "$gene" "$bam" | awk -v min_depth="$MIN_DEPTH" '
             {
@@ -51,9 +56,12 @@ for bam in "${BAM_FILES[@]}"; do
                 else print (covered / total) * 100
             }
         ')
-
-        printf "%s\t%s\t%s\n" "$sample_name" "$gene" "$breadth" >> "$BREADTH_FILE"
+        breadth_values+=("$breadth")
     done
+
+    printf "%s" "$sample_name" >> "$BREADTH_FILE"
+    printf "\t%s" "${breadth_values[@]}" >> "$BREADTH_FILE"
+    printf "\n" >> "$BREADTH_FILE"
 done
 
 echo "Coverage calculation complete."

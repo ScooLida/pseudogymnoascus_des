@@ -1,6 +1,7 @@
 #!/bin/bash
-# Select samples with sufficient breadth of coverage across several genes.
-# For selected samples, extract per-position depth tables for every target gene.
+# Select samples with sufficient breadth of coverage across several genes from
+# the wide sample-by-gene coverage table. For selected samples, extract
+# per-position depth tables for every target gene.
 
 # Configuration
 OUT_DIR="./genes_report"
@@ -21,17 +22,20 @@ fi
 # Create a persistent list of samples passing the selection criteria.
 awk -v threshold="$MIN_PERCENT" -v min_genes="$MIN_SUCCESS_GENES" '
 BEGIN { FS = "\t" }
-NR > 1 {
+NR == 1 {
+    for (column = 2; column <= NF; column++) gene_column[$column] = column
+    next
+}
+{
     sample = $1
-    breadth = $3
-    if (breadth + 0 >= threshold + 0) success_count[sample]++
-}
-END {
-    for (sample in success_count) {
-        if (success_count[sample] >= min_genes) print sample
+    successful_genes = 0
+    for (gene in gene_column) {
+        column = gene_column[gene]
+        if (($column + 0) >= threshold) successful_genes++
     }
+    if (successful_genes >= min_genes) print sample
 }
-' "$INPUT_BREADTH" | sort > "$TARGET_SAMPLES_FILE"
+' "$INPUT_BREADTH" | sort -u > "$TARGET_SAMPLES_FILE"
 
 mapfile -t target_samples < "$TARGET_SAMPLES_FILE"
 target_count=${#target_samples[@]}

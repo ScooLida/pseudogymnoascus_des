@@ -16,7 +16,9 @@ Run the scripts from the repository root in this order:
 
 1. `scr/scr_01_cov_table.sh` scans BAM files in `./My_grib_genes/my_genome`,
    measures the percentage of positions with depth at least `MIN_DEPTH=3`,
-   and writes `genes_report/genes_breadth.tsv`.
+   and writes `genes_report/genes_breadth.tsv` as a wide table: one row per
+   sample, one column per target gene, and one coverage percentage at each
+   sample-gene intersection.
 2. `scr/scr_02_target_samples.sh` selects samples with at least
    `MIN_SUCCESS_GENES=2` genes reaching `MIN_PERCENT=60` breadth. It writes
    `genes_report/target_samples.txt` and per-gene depth tables named
