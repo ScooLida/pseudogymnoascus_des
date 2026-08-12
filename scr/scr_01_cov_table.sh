@@ -1,7 +1,8 @@
 #!/bin/bash
 # Calculate breadth of coverage for every BAM sample and target gene.
 # Each row contains one sample, each column contains one gene, and each cell
-# contains the percentage of positions with read depth at least MIN_DEPTH.
+# contains the percentage of positions with read depth at least MIN_DEPTH,
+# using only reads with mapping quality at least MIN_MAPQ.
 
 # Configuration
 OUT_DIR="./genes_report"
@@ -9,6 +10,7 @@ BAM_DIR="./My_grib_genes/my_genome"
 BAM_GLOB="*/*rescaled.bam"
 BREADTH_FILE="$OUT_DIR/genes_breadth.tsv"
 MIN_DEPTH=3
+MIN_MAPQ=20
 GENES=("Pd_18S" "Pd_ITS" "Pd_28S" "Pd_MCM7" "Pd_TEF1alpha" "Pd_RPB2")
 
 shopt -s nullglob
@@ -28,6 +30,7 @@ fi
 total_files=${#BAM_FILES[@]}
 echo "Samples found: $total_files"
 echo "Coverage threshold: depth >= $MIN_DEPTH"
+echo "Mapping quality threshold: MAPQ >= $MIN_MAPQ"
 
 counter=0
 for bam in "${BAM_FILES[@]}"; do
@@ -46,7 +49,7 @@ for bam in "${BAM_FILES[@]}"; do
 
     breadth_values=()
     for gene in "${GENES[@]}"; do
-        breadth=$(samtools depth -a -r "$gene" "$bam" | awk -v min_depth="$MIN_DEPTH" '
+        breadth=$(samtools depth -a -Q "$MIN_MAPQ" -r "$gene" "$bam" | awk -v min_depth="$MIN_DEPTH" '
             {
                 total++
                 if ($3 >= min_depth) covered++

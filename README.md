@@ -15,7 +15,8 @@ This workflow evaluates coverage of six target genes:
 Run the scripts from the repository root in this order:
 
 1. `scr/scr_01_cov_table.sh` scans BAM files in `./My_grib_genes/my_genome`,
-   measures the percentage of positions with depth at least `MIN_DEPTH=3`,
+   uses reads with `MAPQ >= MIN_MAPQ=20`, measures the percentage of positions
+   with depth at least `MIN_DEPTH=3`,
    and writes `genes_report/genes_breadth.tsv` as a wide table: one row per
    sample, one column per target gene, and one coverage percentage at each
    sample-gene intersection.
