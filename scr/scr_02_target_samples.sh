@@ -10,6 +10,7 @@ TARGET_SAMPLES_FILE="$OUT_DIR/target_samples.txt"
 BAM_DIR="./My_grib_genes/my_genome"
 MIN_PERCENT=60
 MIN_SUCCESS_GENES=2
+MIN_MAPQ=20
 GENES=("Pd_18S" "Pd_ITS" "Pd_28S" "Pd_MCM7" "Pd_TEF1alpha" "Pd_RPB2")
 
 mkdir -p "$OUT_DIR"
@@ -71,7 +72,7 @@ for target in "${target_samples[@]}"; do
     target_bam="${candidate_bams[0]}"
 
     for gene in "${GENES[@]}"; do
-        samtools depth -a -r "$gene" "$target_bam" | \
+        samtools depth -a -Q "$MIN_MAPQ" -r "$gene" "$target_bam" | \
             awk -v sample="$target" '{ print sample "\t" $2 "\t" $3 }' >> "$OUT_DIR/${gene}_temp.tsv"
     done
 done

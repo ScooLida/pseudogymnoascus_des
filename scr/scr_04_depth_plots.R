@@ -6,8 +6,10 @@
 
 INPUT_DIR <- "/home/lidacool/PycharmProjects/grib"
 TARGET_SAMPLES_FILE <- file.path(INPUT_DIR, "target_samples.txt")
+BREADTH_FILE <- file.path(INPUT_DIR, "genes_breadth.tsv")
 INPUT_PATTERN <- "^Pd_(18S|ITS|28S|MCM7|TEF1alpha|RPB2)_fil_cov_71\\.tsv$"
 OUTPUT_DIR <- file.path(INPUT_DIR, "depth_plots")
+MIN_PERCENT <- 60
 
 if (!requireNamespace("ggplot2", quietly = TRUE)) {
   stop("Install ggplot2 first: install.packages('ggplot2')")
@@ -15,10 +17,16 @@ if (!requireNamespace("ggplot2", quietly = TRUE)) {
 if (!file.exists(TARGET_SAMPLES_FILE)) {
   stop("Target sample list not found: ", TARGET_SAMPLES_FILE)
 }
+if (!file.exists(BREADTH_FILE)) {
+  stop("Coverage summary not found: ", BREADTH_FILE)
+}
 
 target_samples <- unique(trimws(readLines(TARGET_SAMPLES_FILE, warn = FALSE)))
 target_samples <- target_samples[nzchar(target_samples)]
 if (length(target_samples) == 0) stop("The target sample list is empty.")
+
+breadth <- read.delim(BREADTH_FILE, header = TRUE, sep = "\t", check.names = FALSE)
+if (!"Sample" %in% names(breadth)) stop("The coverage summary has no Sample column.")
 
 input_files <- list.files(INPUT_DIR, pattern = INPUT_PATTERN, full.names = TRUE)
 if (length(input_files) != 6) {
@@ -50,6 +58,19 @@ for (input_file in sort(input_files)) {
     next
   }
 
+  gene <- sub("_fil_cov_71\\.tsv$", "", basename(input_file))
+  if (!gene %in% names(breadth)) {
+    stop("Gene is missing from the coverage summary: ", gene)
+  }
+  passing_samples <- breadth$Sample[
+    breadth$Sample %in% target_samples & breadth[[gene]] >= MIN_PERCENT
+  ]
+  data <- data[data$Sample %in% passing_samples, , drop = FALSE]
+  if (nrow(data) == 0) {
+    warning("No samples passed the ", MIN_PERCENT, "% filter for ", gene)
+    next
+  }
+
   data$Sample <- factor(data$Sample, levels = target_samples)
   data <- data[order(data$Sample, data$Position), ]
 
@@ -66,7 +87,6 @@ for (input_file in sort(input_files)) {
     row.names = NULL
   )
 
-  gene <- sub("_fil_cov_71\\.tsv$", "", basename(input_file))
   output_file <- file.path(OUTPUT_DIR, paste0(gene, "_depth.png"))
 
   plot <- ggplot2::ggplot(
@@ -90,7 +110,12 @@ for (input_file in sort(input_files)) {
     ) +
     ggplot2::labs(
       title = paste(gene, "coverage depth across selected samples"),
-      subtitle = paste(length(unique(data$Sample)), "samples"),
+      subtitle = paste(
+        length(unique(data$Sample)),
+        "samples with depth >= 3 at >=",
+        MIN_PERCENT,
+        "% of positions"
+      ),
       x = "Nucleotide position along the gene",
       y = "Sequencing depth (number of reads)"
     ) +

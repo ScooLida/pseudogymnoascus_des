@@ -23,7 +23,8 @@ Run the scripts from the repository root in this order:
 2. `scr/scr_02_target_samples.sh` selects samples with at least
    `MIN_SUCCESS_GENES=2` genes reaching `MIN_PERCENT=60` breadth. It writes
    `genes_report/target_samples.txt` and per-gene depth tables named
-   `*_fil_cov_<number>.tsv`.
+   `*_fil_cov_<number>.tsv`. The depth tables use the same `MAPQ >= 20`
+   filter as the breadth calculation.
 3. `scr/scr_03_cov_table_xls.sh` converts those long-format tables into wide
    TSV matrices named `*_wide.tsv`. Despite the historical `xls` name, no XLS
    files are produced.
