@@ -7,7 +7,7 @@
 INPUT_DIR <- "/home/lidacool/PycharmProjects/grib"
 TARGET_SAMPLES_FILE <- file.path(INPUT_DIR, "target_samples.txt")
 BREADTH_FILE <- file.path(INPUT_DIR, "genes_breadth.tsv")
-INPUT_PATTERN <- "^Pd_(18S|ITS|28S|MCM7|TEF1alpha|RPB2)_fil_cov_71\\.tsv$"
+INPUT_PATTERN <- "^Pd_(18S|ITS|28S|MCM7|TEF1alpha|RPB2)_fil_cov_[0-9]+\\.tsv$"
 OUTPUT_DIR <- file.path(INPUT_DIR, "depth_plots")
 MIN_PERCENT <- 60
 
@@ -58,7 +58,7 @@ for (input_file in sort(input_files)) {
     next
   }
 
-  gene <- sub("_fil_cov_71\\.tsv$", "", basename(input_file))
+  gene <- sub("_fil_cov_[0-9]+\\.tsv$", "", basename(input_file))
   if (!gene %in% names(breadth)) {
     stop("Gene is missing from the coverage summary: ", gene)
   }
