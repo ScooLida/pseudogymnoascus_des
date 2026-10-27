@@ -35,9 +35,10 @@ Run the scripts from the repository root in this order:
 Stages after the coverage filter. Copy `config/config.example.sh` to
 `config/config.sh` and edit the paths first.
 
-21. `scr/scr_21_species_screen.sh` runs Kaiju (species level) **only** on the
-    samples that passed the coverage filter (stage 2 output), producing
-    `21_species/<sample>.species.tsv`.
+21. `scr/scr_21_malt_screen.sh` runs a species-level screen with **MALT**
+    (BLASTN, semi-global, naive LCA) **only** on the samples that passed the
+    gene-presence filter, producing RMA6 files and Tab alignments in
+    `21_malt/<sample>/` (open the RMA6 in MEGAN for the LCA taxonomy).
 31. `scr/scr_31_build_panel.py` builds the competitive-mapping panel from the
     selected *Pseudogymnoascus* genomes plus close relatives. *P. destructans*
     is deliberately **excluded** from the panel and written separately to
