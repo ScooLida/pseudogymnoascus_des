@@ -15,7 +15,7 @@ mkdir -p "$OUT"
 MK=$OUT/makefile_competitive.yaml
 PANEL_FASTA=${PANEL_FASTA:-$WORK/panel/panel.fasta}
 SAMPLES_DIR=${SAMPLES_DIR:-$PROJECT/samples/storage2}
-ALIGNER=${COMPETITIVE_ALIGNER:-Bowtie2}
+ALIGNER=${COMPETITIVE_ALIGNER:-BWA-MEM}
 MAX_ALN=${COMPETITIVE_MAX_ALN:-25}
 
 {

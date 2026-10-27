@@ -47,9 +47,7 @@ Stages after the coverage filter. Copy `config/config.example.sh` to
     (species, FASTA, taxid).
 32. `scr/scr_32_index.sh` builds the BWA and faidx indexes.
 33. `scr/scr_33_competitive_map.sh` generates a Paleomix BAM makefile for the
-    combined panel and runs it (Bowtie2 end-to-end by default, so read ends are
-    not soft-clipped; up to `-k 25` alternative alignments are retained). Set
-    `COMPETITIVE_ALIGNER=BWA-MEM` for BWA-MEM/XA alternatives.
+    combined panel and runs it with **BWA-MEM**; alternative hits are kept in the XA tag.
 34. `scr/scr_34_assign_coverage.py` assigns each read to the best-scoring genome
     (ambiguous reads go to genus or are marked ambiguous), collapses PCR
     duplicates by 5' coordinate + strand, and reports breadth, mean depth and
