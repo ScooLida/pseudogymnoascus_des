@@ -1,33 +1,69 @@
 #!/bin/bash
-# Stage 3c - competitive mapping with BWA aln.
-# All selected reads are aligned simultaneously to the combined panel; up to
-# MAX_ALT alternative hits are kept in the XA tag (-n), so that ambiguous reads
-# can later be assigned to a group/genus instead of a species.
+# Stage 3c - competitive mapping through Paleomix.
 #
-# Usage: bash scr/scr_33_competitive_map.sh SAMPLE [SAMPLE ...]
+# Generates a Paleomix BAM makefile for the competitive panel and runs it.
+# Default aligner is Bowtie2 in end-to-end mode (no 5'/3' soft-clipping); up to
+# MAX_ALN alternative alignments per read are retained with -k.  Set
+# COMPETITIVE_ALIGNER=BWA-MEM for BWA-MEM (XА-tag alternatives, soft-clips).
+#
+# Usage: bash scr/scr_33_competitive_map.sh
 set -euo pipefail
 source "$(dirname "$0")/../config/config.sh"
 
-MAX_ALT=${MAX_ALT:-100}
-P=$WORK/panel
 OUT=$WORK/33_map
 mkdir -p "$OUT"
+MK=$OUT/makefile_competitive.yaml
+PANEL_FASTA=${PANEL_FASTA:-$WORK/panel/panel.fasta}
+SAMPLES_DIR=${SAMPLES_DIR:-$PROJECT/samples/storage2}
+ALIGNER=${COMPETITIVE_ALIGNER:-Bowtie2}
+MAX_ALN=${COMPETITIVE_MAX_ALN:-25}
 
-for s in "$@"; do
-  r1=$(ls "$PROJECT"/samples/storage2/${s}_1.fastq* 2>/dev/null | head -1)
-  r2=$(ls "$PROJECT"/samples/storage2/${s}_2.fastq* 2>/dev/null | head -1)
-  [ -z "$r1" ] && { echo "skip $s: no R1"; continue; }
-  d=$OUT/$s; mkdir -p "$d"
-  bwa aln -t "$THREADS" -n 0.01 -o 2 -e 0.01 -l 1024 "$P/panel.fasta" "$r1" > "$d/r1.sai"
-  if [ -n "$r2" ]; then
-    bwa aln -t "$THREADS" -n 0.01 -o 2 -e 0.01 -l 1024 "$P/panel.fasta" "$r2" > "$d/r2.sai"
-    bwa sampe -n "$MAX_ALT" -N "$MAX_ALT" -P "$P/panel.fasta" \
-      "$d/r1.sai" "$d/r2.sai" "$r1" "$r2" > "$d/$s.sam"
+{
+  cat <<YAML
+Options:
+  Platform: Illumina
+  QualityOffset: 33
+  AdapterRemoval:
+    --mm: 3
+    --minlength: 25
+    --collapse: yes
+    --trimns: yes
+    --trimqualities: yes
+  Aligners:
+    Program: $ALIGNER
+YAML
+  if [ "$ALIGNER" = "Bowtie2" ]; then
+    cat <<YAML
+    Bowtie2:
+      MinQuality: 0
+      FilterUnmappedReads: yes
+      --end-to-end:
+      "-k": $MAX_ALN
+YAML
   else
-    bwa samse -n "$MAX_ALT" "$P/panel.fasta" "$d/r1.sai" "$r1" > "$d/$s.sam"
+    cat <<YAML
+    BWA-MEM:
+      MinQuality: 0
+      FilterUnmappedReads: yes
+YAML
   fi
-  samtools view -bhS "$d/$s.sam" | samtools sort -@ "$THREADS" -o "$d/$s.bam" -
-  samtools index "$d/$s.bam"
-  rm -f "$d"/*.sai "$d/$s.sam"
-  echo "mapped $s"
-done
+  cat <<YAML
+  Features:
+    PCRDuplicates: filter
+    mapDamage: rescale
+    Coverage: yes
+    Depths: yes
+    Summary: yes
+Prefixes:
+  panel:
+    Path: $PANEL_FASTA
+Competitive:
+YAML
+  while read -r s; do
+    [ -z "$s" ] && continue
+    printf '  %s:\n    %s:\n      Path: %s/%s_[12].fastq*\n' "$s" "$s" "$SAMPLES_DIR" "$s"
+  done < "$WORK/01_passing_samples.tsv"
+} > "$MK"
+
+paleomix bam run "$MK" --max-threads "$THREADS" --force
+echo "Paleomix competitive mapping finished: $OUT"

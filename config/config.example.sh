@@ -27,6 +27,10 @@ export SELECTED=${SELECTED:-/mnt/Storage2/ltursunova/pseudogymnoascus/selection/
 export GENOME_DIR=${GENOME_DIR:-/mnt/Storage2/ltursunova/pseudogymnoascus/fna}
 export DESTRUCTANS_REF=${DESTRUCTANS_REF:-$PROJECT/grib_combine_named.fasta}
 export THREADS=${THREADS:-32}
+export PANEL_FASTA=${PANEL_FASTA:-$WORK/panel/panel.fasta}
+export SAMPLES_DIR=${SAMPLES_DIR:-$PROJECT/samples/storage2}
+export COMPETITIVE_ALIGNER=${COMPETITIVE_ALIGNER:-Bowtie2}
+export COMPETITIVE_MAX_ALN=${COMPETITIVE_MAX_ALN:-25}
 
 # Ancient-DNA rule
 export DELTAS_MIN=${DELTAS_MIN:-11.0}
