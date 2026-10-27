@@ -54,6 +54,9 @@ Stages after the coverage filter. Copy `config/config.example.sh` to
     reads (including MAPQ >= 20).
 35. `scr/scr_35_mapdamage.sh SPECIES SAMPLE ...` runs mapDamage on the reads
     assigned to a target species (fragment lengths and 5'-C>T / 3'-G>A damage).
+36. `scr/scr_36_clip_qc.py` checks 5'/3' end clipping (soft/hard clips) in the
+    gene BAMs and in the competitive-panel BAMs; run it before downstream
+    coverage/damage interpretation.
 41. `scr/scr_41_report.py` produces the final report: rows = samples, columns =
     species with % coverage, depth (MAPQ >= 20) and read counts.
 
