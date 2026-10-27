@@ -1,7 +1,7 @@
 #!/bin/bash
 # Convert per-gene long-format coverage tables into wide TSV matrices.
 # Rows represent samples, columns represent genomic positions, and cell values
-# contain read depth. Despite the historical name, this script does not create XLS files.
+# contain read depth.
 
 # Configuration
 OUT_DIR="./genes_report"

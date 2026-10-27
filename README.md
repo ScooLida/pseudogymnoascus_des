@@ -14,7 +14,7 @@ This workflow evaluates coverage of six target genes:
 
 Run the scripts from the repository root in this order:
 
-1. `scr/scr_01_cov_table.sh` scans BAM files in `./My_grib_genes/my_genome`,
+1. `scr/scr_01_gene_presence.sh` scans BAM files in `./My_grib_genes/my_genome`,
    uses reads with `MAPQ >= MIN_MAPQ=20`, measures the percentage of positions
    with depth at least `MIN_DEPTH=3`,
    and writes `genes_report/genes_breadth.tsv` as a wide table: one row per
@@ -25,34 +25,35 @@ Run the scripts from the repository root in this order:
    `genes_report/target_samples.txt` and per-gene depth tables named
    `*_fil_cov_<number>.tsv`. The depth tables use the same `MAPQ >= 20`
    filter as the breadth calculation.
-3. `scr/scr_03_cov_table_xls.sh` converts those long-format tables into wide
-   TSV matrices named `*_wide.tsv`. Despite the historical `xls` name, no XLS
-   files are produced.
+3. `scr/scr_03_wide_tables.sh` converts those long-format tables into wide
+   TSV matrices named `*_wide.tsv`.
+4. `scr/scr_04_depth_plots.R` builds per-gene depth plots from the selected
+   samples.
 
 ## Species / competitive-panel workflow
 
 Stages after the coverage filter. Copy `config/config.example.sh` to
 `config/config.sh` and edit the paths first.
 
-4. `scr/scr_21_species_screen.sh` runs Kaiju (species level) **only** on the
-   samples that passed the coverage filter (stage 2 output), producing
-   `21_species/<sample>.species.tsv`.
-5. `scr/scr_31_build_panel.py` builds the competitive-mapping panel from the
-   selected *Pseudogymnoascus* genomes plus close relatives. *P. destructans* is
-   deliberately **excluded** from the panel and written separately to
-   `destructans_ref.fasta` (used for reference/tree projection). Genome FASTAs
-   are taken from `--genome-dir`, relatives from `--relatives` (species, FASTA,
-   taxid).
-6. `scr/scr_32_index.sh` builds the BWA and faidx indexes.
-7. `scr/scr_33_competitive_map.sh SAMPLE ...` maps reads simultaneously to the
-   combined panel with `bwa aln`, keeping alternative hits in the XA tag.
-8. `scr/scr_34_assign_coverage.py` assigns each read to the best-scoring genome
-   (ambiguous reads go to genus or are marked ambiguous), collapses PCR
-   duplicates by 5' coordinate + strand, and reports breadth, mean depth and
-   reads (including MAPQ >= 20).
-9. `scr/scr_35_mapdamage.sh SPECIES SAMPLE ...` runs mapDamage on the reads
-   assigned to a target species (fragment lengths and 5'-C>T / 3'-G>A damage).
-10. `scr/scr_41_report.py` produces the final report: rows = samples, columns =
+21. `scr/scr_21_species_screen.sh` runs Kaiju (species level) **only** on the
+    samples that passed the coverage filter (stage 2 output), producing
+    `21_species/<sample>.species.tsv`.
+31. `scr/scr_31_build_panel.py` builds the competitive-mapping panel from the
+    selected *Pseudogymnoascus* genomes plus close relatives. *P. destructans*
+    is deliberately **excluded** from the panel and written separately to
+    `destructans_ref.fasta` (used for reference/tree projection). Genome FASTAs
+    are taken from `--genome-dir`, relatives from `--relatives`
+    (species, FASTA, taxid).
+32. `scr/scr_32_index.sh` builds the BWA and faidx indexes.
+33. `scr/scr_33_competitive_map.sh SAMPLE ...` maps reads simultaneously to the
+    combined panel with `bwa aln`, keeping alternative hits in the XA tag.
+34. `scr/scr_34_assign_coverage.py` assigns each read to the best-scoring genome
+    (ambiguous reads go to genus or are marked ambiguous), collapses PCR
+    duplicates by 5' coordinate + strand, and reports breadth, mean depth and
+    reads (including MAPQ >= 20).
+35. `scr/scr_35_mapdamage.sh SPECIES SAMPLE ...` runs mapDamage on the reads
+    assigned to a target species (fragment lengths and 5'-C>T / 3'-G>A damage).
+41. `scr/scr_41_report.py` produces the final report: rows = samples, columns =
     species with % coverage, depth (MAPQ >= 20) and read counts.
 
 ### Ancient-DNA authentication
