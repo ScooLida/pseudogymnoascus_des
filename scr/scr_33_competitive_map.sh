@@ -45,6 +45,7 @@ YAML
     BWA-MEM:
       MinQuality: 0
       FilterUnmappedReads: yes
+      "-L": ${BWA_MEM_CLIP_PENALTY:-100}
 YAML
   fi
   cat <<YAML
