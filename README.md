@@ -33,8 +33,7 @@ Run the scripts from the repository root in this order:
 
 > **No terminal trimming.** Both the gene and the competitive makefiles run
 > AdapterRemoval with `--trimns: no` and `--trimqualities: no`, so 5'/3' read ends
-> (and the ancient-DNA damage signal) are preserved. `scr_37_filter_clipped.py` is
-> an optional alignment-clipping filter and is not part of the default flow.
+> (and the ancient-DNA damage signal) are preserved.
 
 ## Species / competitive-panel workflow
 
@@ -63,7 +62,6 @@ Stages after the coverage filter. Copy `config/config.example.sh` to
 36. `scr/scr_36_clip_qc.py` checks 5'/3' end clipping (soft/hard clips) in the
     gene BAMs and in the competitive-panel BAMs; run it before downstream
     coverage/damage interpretation.
-37. `scr/scr_37_filter_clipped.py` removes alignments with 5'/3' soft or hard
     clips, enforcing an end-to-end-only BAM. BWA-MEM cannot disable soft-clipping
     itself, so combine a high `-L` clipping penalty (`BWA_MEM_CLIP_PENALTY`) with
     this filter when clipping must be zero.
