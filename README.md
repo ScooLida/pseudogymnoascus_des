@@ -30,6 +30,12 @@ Run the scripts from the repository root in this order:
 14. `scr/scr_14_depth_plots.R` builds per-gene depth plots from the selected
    samples.
 
+
+> **No terminal trimming.** Both the gene and the competitive makefiles run
+> AdapterRemoval with `--trimns: no` and `--trimqualities: no`, so 5'/3' read ends
+> (and the ancient-DNA damage signal) are preserved. `scr_37_filter_clipped.py` is
+> an optional alignment-clipping filter and is not part of the default flow.
+
 ## Species / competitive-panel workflow
 
 Stages after the coverage filter. Copy `config/config.example.sh` to

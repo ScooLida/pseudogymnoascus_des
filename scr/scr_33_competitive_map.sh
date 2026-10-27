@@ -27,8 +27,9 @@ Options:
     --mm: 3
     --minlength: 25
     --collapse: yes
-    --trimns: yes
-    --trimqualities: yes
+    # keep 5'/3' ends intact to preserve ancient-DNA damage
+    --trimns: no
+    --trimqualities: no
   Aligners:
     Program: $ALIGNER
 YAML
@@ -45,7 +46,6 @@ YAML
     BWA-MEM:
       MinQuality: 0
       FilterUnmappedReads: yes
-      "-L": ${BWA_MEM_CLIP_PENALTY:-100}
 YAML
   fi
   cat <<YAML

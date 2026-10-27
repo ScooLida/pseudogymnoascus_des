@@ -23,8 +23,9 @@ Options:
     --minlength: 25
     # Extra features enabled by default; change 'yes' to 'no' to disable
     --collapse: yes
-    --trimns: yes
-    --trimqualities: yes
+    # keep 5'/3' ends intact to preserve ancient-DNA damage
+    --trimns: no
+    --trimqualities: no
 
   # Settings for aligners supported by the pipeline
   Aligners:
