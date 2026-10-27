@@ -14,20 +14,20 @@ This workflow evaluates coverage of six target genes:
 
 Run the scripts from the repository root in this order:
 
-1. `scr/scr_01_gene_presence.sh` scans BAM files in `./My_grib_genes/my_genome`,
+11. `scr/scr_11_gene_presence.sh` scans BAM files in `./My_grib_genes/my_genome`,
    uses reads with `MAPQ >= MIN_MAPQ=20`, measures the percentage of positions
    with depth at least `MIN_DEPTH=3`,
    and writes `genes_report/genes_breadth.tsv` as a wide table: one row per
    sample, one column per target gene, and one coverage percentage at each
    sample-gene intersection.
-2. `scr/scr_02_target_samples.sh` selects samples with at least
+12. `scr/scr_12_target_samples.sh` selects samples with at least
    `MIN_SUCCESS_GENES=2` genes reaching `MIN_PERCENT=60` breadth. It writes
    `genes_report/target_samples.txt` and per-gene depth tables named
    `*_fil_cov_<number>.tsv`. The depth tables use the same `MAPQ >= 20`
    filter as the breadth calculation.
-3. `scr/scr_03_wide_tables.sh` converts those long-format tables into wide
+13. `scr/scr_13_wide_tables.sh` converts those long-format tables into wide
    TSV matrices named `*_wide.tsv`.
-4. `scr/scr_04_depth_plots.R` builds per-gene depth plots from the selected
+14. `scr/scr_14_depth_plots.R` builds per-gene depth plots from the selected
    samples.
 
 ## Species / competitive-panel workflow
