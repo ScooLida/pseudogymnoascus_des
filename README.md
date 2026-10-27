@@ -62,9 +62,6 @@ Stages after the coverage filter. Copy `config/config.example.sh` to
 36. `scr/scr_36_clip_qc.py` checks 5'/3' end clipping (soft/hard clips) in the
     gene BAMs and in the competitive-panel BAMs; run it before downstream
     coverage/damage interpretation.
-    clips, enforcing an end-to-end-only BAM. BWA-MEM cannot disable soft-clipping
-    itself, so combine a high `-L` clipping penalty (`BWA_MEM_CLIP_PENALTY`) with
-    this filter when clipping must be zero.
 41. `scr/scr_41_report.py` produces the final report: rows = samples, columns =
     species with % coverage, depth (MAPQ >= 20) and read counts.
 
