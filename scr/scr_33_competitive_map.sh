@@ -46,6 +46,7 @@ YAML
     BWA-MEM:
       MinQuality: 0
       FilterUnmappedReads: yes
+      "-a":
       "-h": ${BWA_MEM_MAX_HITS:-50}
 YAML
   fi
